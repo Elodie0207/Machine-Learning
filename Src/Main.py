@@ -63,7 +63,7 @@ class LinearModel:
         return np.where(predictions >= 0, 1, 0)
 
 if __name__ == "__main__":
-    model = LinearModel(learning_rate=0.01, n_iterations=1000)
+    model = LinearModel(learning_rate=0.001, n_iterations=1000)
 
 
     X, y = model.preprocess_images(repertoire_voitures, repertoire_motos, output_repertoire)
@@ -88,6 +88,13 @@ if __name__ == "__main__":
     class_names = {0: 'Voiture', 1: 'Motos'}
     predicted_classes = [class_names[pred] for pred in predictions]
 
+    plt.figure(figsize=(8, 6))
+    plt.scatter(range(len(predictions)), predictions, c=y, cmap='coolwarm', edgecolors='k')
+    plt.colorbar(label='Classe (0 = Voiture, 1 = Moto)')
+    plt.title('Prédictions du modèle linéaire')
+    plt.xlabel('Échantillons')
+    plt.ylabel('Prédictions')
+    plt.show()
 
     plt.figure(figsize=(12, 8))
     for i in range(len(predictions)):
