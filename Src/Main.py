@@ -8,7 +8,7 @@ repertoire_motos = "..\\Motos"
 output_repertoire = "..\\Test"
 
 class LinearModel:
-    def __init__(self, learning_rate=0.01, n_iterations=1000):
+    def __init__(self, learning_rate=0.00001, n_iterations=1000):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
         self.weights = None
@@ -65,21 +65,13 @@ class LinearModel:
 if __name__ == "__main__":
     model = LinearModel(learning_rate=0.001, n_iterations=1000)
 
-
     X, y = model.preprocess_images(repertoire_voitures, repertoire_motos, output_repertoire)
 
-
+    # Mélangez les données une seule fois
     indices = np.arange(X.shape[0])
     np.random.shuffle(indices)
     X = X[indices]
     y = y[indices]
-
-    indices = np.arange(X.shape[0])
-    np.random.shuffle(indices)
-    X = X[indices]
-    y = y[indices]
-
-    input_size = X.shape[1]
 
     model.fit(X, y)
 
@@ -88,21 +80,31 @@ if __name__ == "__main__":
     class_names = {0: 'Voiture', 1: 'Motos'}
     predicted_classes = [class_names[pred] for pred in predictions]
 
-    plt.figure(figsize=(8, 6))
+    # Visualisation des prédictions
+    plt.figure(figsize=(14, 8))
     plt.scatter(range(len(predictions)), predictions, c=y, cmap='coolwarm', edgecolors='k')
     plt.colorbar(label='Classe (0 = Voiture, 1 = Moto)')
     plt.title('Prédictions du modèle linéaire')
     plt.xlabel('Échantillons')
-    plt.ylabel('Prédictions')
+    plt.ylabel('Probabilité prédite')
     plt.show()
 
-    plt.figure(figsize=(12, 8))
-    for i in range(len(predictions)):
-        plt.subplot(3, len(predictions)//3 + 1, i+1)
+    # Visualisation des images et des prédictions
+    n_images = len(predictions)
+    n_rows = 3
+    n_cols = (n_images + n_rows - 1) // n_rows  # Ajuster pour avoir le bon nombre de colonnes
+
+    plt.figure(figsize=(2 * n_cols, 2 * n_rows))
+    for i in range(n_images):
+        plt.subplot(n_rows, n_cols, i + 1)
         plt.xticks([]), plt.yticks([])  # Hide tick marks
         plt.imshow(X[i].reshape(224, 224, 3))
-        plt.xlabel(f'Prediction: {predicted_classes[i]}')
-        plt.ylabel(f'Realite: {class_names[int(y[i])]}', rotation=0, labelpad=30)
-    plt.suptitle('Modele lineaire avec image')
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust subplot layout
+        plt.xlabel(f'Prédiction: {predicted_classes[i]}')
+        # Move the real label to the title to prevent overlap
+        plt.title(f'Réel: {class_names[int(y[i])]}')
+    plt.suptitle('Modèle linéaire avec image', y=1.05)  # Adjust y position of the suptitle
+
+    # Ajuster l'espacement horizontal
+    plt.subplots_adjust(wspace=0.4, hspace=0.4)  # Augmenter l'espacement entre les sous-graphiques
+
     plt.show()
